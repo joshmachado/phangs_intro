@@ -46,7 +46,7 @@ for i in range(len(res)):
     for k in range(len(x)):
         ind = np.where(dist[k] == np.nanmin(dist[k]))
         ind2 = np.where(dist[k] == np.partition(dist[k], 1)[1]) #index of 2nd nearest neighbor
-        ind3 = np.partition(dist[k], 2)[2] #index of 3rd nearest neighbor
+        ind3 = np.where(dist[k] == np.partition(dist[k], 2)[2]) #index of 3rd nearest neighbor
         mindist[k] = dist[k,int(ind[0])]
         nn[k] = int(ind[0])+1
         mindist2[k] = dist[k,int(ind2[0])]
@@ -57,11 +57,22 @@ for i in range(len(res)):
         ind = np.where(corr_dist[k] == np.nanmin(corr_dist[k]))
         mindist_corr[k] = corr_dist[k,int(ind[0])]
         nn_corr[k] = int(ind[0])+1
-        #ind2 = np.where(corr_dist[k])
+        ind2 = np.where(corr_dist[k] == np.partition(corr_dist[k], 1)[1])
+        mindist2_corr[k] = corr_dist[k,int(ind2[0])]
+        nn2_corr[k] = int(ind2[0])+1
+        ind3 = np.where(corr_dist[k] == np.partition(corr_dist[k], 2)[2])
+        mindist3_corr[k] = corr_dist[k,int(ind3[0])]
+        nn3_corr[k] = int(ind3[0])+1
 
     true_dist = np.deg2rad(mindist)*distance[0]
     true_dist_corr = np.deg2rad(mindist_corr)*distance[0]
+    true_dist2 = np.deg2rad(mindist2)*distance[0]
+    true_dist2_corr = np.deg2rad(mindist2_corr)*distance[0]
+    true_dist3 = np.deg2rad(mindist3)*distance[0]
+    true_dist3_corr = np.deg2rad(mindist3_corr)*distance[0]
     cat = pd.DataFrame({'cloudnum':cloudnum, 'x':x, 'corr_x':xs, 'y':y, 'nearest_neighbor':nn,
-    'nearest_neighbor_corr':nn_corr, 'min_distance':mindist, 'min_distance_corr':mindist_corr, 'true_dist':true_dist, 'true_dist_corr':true_dist_corr})
+    'nearest_neighbor_corr':nn_corr, 'min_distance':mindist, 'min_distance_corr':mindist_corr, 'true_dist':true_dist, 'true_dist_corr':true_dist_corr,
+    'nearest_neighbor2':nn2, 'nearest_neighbor2_corr':nn2_corr, 'min_distance2':mindist2, 'min_distance_corr2':mindist2_corr, 'true_dist2_corr':true_dist2_corr,
+    'nearest_neighbor3':nn3, 'nearest_neighbor3_corr':nn3_corr, 'min_distance3':mindist3, 'min_distance_corr3':mindist3_corr, 'true_dist3_corr':true_dist3_corr})
     cat.to_csv('ngc3621_'+str(res[i])+'pc.csv')
     print(str(res[i])+'pc done')
