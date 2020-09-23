@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.cm as cm
 import pandas as pd
 
+loc = '/Users/josh/projects/intro'
 #fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
 #fp = '/data/kant/0/sun.1608/PHANGS/ALMA/v3p4-CPROPS/STv1p5/90pc_homogenized/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
 res = np.array([60,90,120,150])
@@ -14,7 +15,7 @@ for i in range(len(res)):
     distance = np.array(tab['DISTANCE_PC'])
     x = np.array(tab['XCTR_DEG'])
     y = np.array(tab['YCTR_DEG'])
-    ys = y*np.cos(x) #Spherical correction? RA = RAcos(Dec)
+    xs = x*np.cos(np.deg2rad(x)) #Spherical correction? RA = RAcos(Dec)
     peaks = np.array([cloudnum,x,y])
     dist = np.zeros((len(x),len(x)))
     corr_dist = np.zeros((len(x),len(x)))
@@ -30,7 +31,7 @@ for i in range(len(res)):
     while k < len(x):
         for j in range(len(x)):
             dist[k,j] = np.sqrt(np.square(x[k] - x[j]) + np.square(y[k] - y[j]))
-            corr_dist[k,j] = np.sqrt(np.square(x[k] - x[j]) + np.square(ys[k] - ys[j]))
+            corr_dist[k,j] = np.sqrt(np.square(xs[k] - xs[j]) + np.square(y[k] - y[j]))
         k+=1
     dist[dist == 0] = np.nan
     corr_dist[corr_dist == 0] = np.nan
@@ -43,8 +44,9 @@ for i in range(len(res)):
         mindist_corr[k] = corr_dist[k,int(ind[0])]
         nn_corr[k] = int(ind[0])+1
 
-    true_dist = mindist*distance[0]
-    true_dist_corr = mindist_corr*distance[0]
-    cat = pd.DataFrame({'cloudnum':cloudnum, 'x':x, 'y':y, 'corrected_y':ys, 'nearest_neighbor':nn,
+    true_dist = np.deg2rad(mindist)*distance[0]
+    true_dist_corr = np.deg2rad(mindist_corr)*distance[0]
+    cat = pd.DataFrame({'cloudnum':cloudnum, 'x':x, 'corr_x':xs, 'y':y, 'nearest_neighbor':nn,
     'nearest_neighbor_corr':nn_corr, 'min_distance':mindist, 'min_distance_corr':mindist_corr, 'true_dist':true_dist, 'true_dist_corr':true_dist_corr})
     cat.to_csv('ngc3621_'+str(res[i])+'pc.csv')
+    print(str(res[i])+'pc done')
