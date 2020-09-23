@@ -34,7 +34,7 @@ for i in range(len(res)):
     plt.close()
     print(str(res[i])+'pc peak')
 
-    plt.hist(cat.true_dist_corr, bins = (np.linspace(0, 300, 10)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.hist(cat.true_dist_corr, bins = (np.linspace(0, 500, 10)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
     #14 sources above 500pc
     plt.xlabel('Distance to Nearest Neighbor (pc)')
     plt.ylabel('Counts')

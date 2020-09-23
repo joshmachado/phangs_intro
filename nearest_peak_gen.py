@@ -25,6 +25,14 @@ for i in range(len(res)):
     nn_corr = np.zeros(len(x))
     mindist = np.zeros(len(x)) #stores distance to nearest neighbor
     mindist_corr = np.zeros(len(x))
+    nn2 = np.zeros(len(x)) #stores CloudNum of 2nd nearest neighbor
+    nn2_corr = np.zeros(len(x))
+    mindist2 = np.zeros(len(x)) #stores distance to 2nd nearest neighbor
+    mindist2_corr = np.zeros(len(x))
+    nn3 = np.zeros(len(x)) #stores CloudNum of 3rd nearest neighbor
+    nn3_corr = np.zeros(len(x))
+    mindist3 = np.zeros(len(x)) #stores distance to 3rd nearest neighbor
+    mindist3_corr = np.zeros(len(x))
     ## row: peaks[:,0] returns cloudnum, x,y
     k = 0
     j = 0
@@ -37,12 +45,19 @@ for i in range(len(res)):
     corr_dist[corr_dist == 0] = np.nan
     for k in range(len(x)):
         ind = np.where(dist[k] == np.nanmin(dist[k]))
+        ind2 = np.where(dist[k] == np.partition(dist[k], 1)[1]) #index of 2nd nearest neighbor
+        ind3 = np.partition(dist[k], 2)[2] #index of 3rd nearest neighbor
         mindist[k] = dist[k,int(ind[0])]
         nn[k] = int(ind[0])+1
+        mindist2[k] = dist[k,int(ind2[0])]
+        nn2[k] = int(ind2[0])+1
+        mindist3[k] = dist[k,int(ind3[0])]
+        nn3[k] = int(ind3[0])+1
     for k in range(len(x)):
         ind = np.where(corr_dist[k] == np.nanmin(corr_dist[k]))
         mindist_corr[k] = corr_dist[k,int(ind[0])]
         nn_corr[k] = int(ind[0])+1
+        #ind2 = np.where(corr_dist[k])
 
     true_dist = np.deg2rad(mindist)*distance[0]
     true_dist_corr = np.deg2rad(mindist_corr)*distance[0]
