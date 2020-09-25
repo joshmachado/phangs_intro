@@ -4,10 +4,15 @@ import numpy as np
 import matplotlib.cm as cm
 import pandas as pd
 
+#cp /data/tycho/0/sun.1608/PHANGS/ALMA/v3p4-CPROPS/STv1p5/150pc_matched/ngc3621_12m+7m+tp_co21_150pc_props.fits.bz2 .
+
 loc = '/Users/josh/projects/intro'
 #fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
 #fp = '/data/kant/0/sun.1608/PHANGS/ALMA/v3p4-CPROPS/STv1p5/90pc_homogenized/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
 res = np.array([60,90,120,150])
+mean_dist = np.zeros([4,3])
+beam_sep = np.zeros([4,3])
+percentiles = np.zeros([4,6]) #90th & 75th
 for i in range(len(res)):
     fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
     tab = Table.read(fp)
@@ -47,21 +52,21 @@ for i in range(len(res)):
         ind = np.where(dist[k] == np.nanmin(dist[k]))
         ind2 = np.where(dist[k] == np.partition(dist[k], 1)[1]) #index of 2nd nearest neighbor
         ind3 = np.where(dist[k] == np.partition(dist[k], 2)[2]) #index of 3rd nearest neighbor
-        mindist[k] = dist[k,int(ind[0])]
+        mindist[k] = np.deg2rad(dist[k,int(ind[0])])*distance[0]
         nn[k] = int(ind[0])+1
-        mindist2[k] = dist[k,int(ind2[0])]
+        mindist2[k] = np.deg2rad(dist[k,int(ind2[0])])*distance[0]
         nn2[k] = int(ind2[0])+1
-        mindist3[k] = dist[k,int(ind3[0])]
+        mindist3[k] = np.deg2rad(dist[k,int(ind3[0])])*distance[0]
         nn3[k] = int(ind3[0])+1
     for k in range(len(x)):
         ind = np.where(corr_dist[k] == np.nanmin(corr_dist[k]))
-        mindist_corr[k] = corr_dist[k,int(ind[0])]
+        mindist_corr[k] = np.deg2rad(corr_dist[k,int(ind[0])])*distance[0]
         nn_corr[k] = int(ind[0])+1
         ind2 = np.where(corr_dist[k] == np.partition(corr_dist[k], 1)[1])
-        mindist2_corr[k] = corr_dist[k,int(ind2[0])]
+        mindist2_corr[k] = np.deg2rad(corr_dist[k,int(ind2[0])])*distance[0]
         nn2_corr[k] = int(ind2[0])+1
         ind3 = np.where(corr_dist[k] == np.partition(corr_dist[k], 2)[2])
-        mindist3_corr[k] = corr_dist[k,int(ind3[0])]
+        mindist3_corr[k] = np.deg2rad(corr_dist[k,int(ind3[0])])*distance[0]
         nn3_corr[k] = int(ind3[0])+1
 
     true_dist = np.deg2rad(mindist)*distance[0]
@@ -74,5 +79,19 @@ for i in range(len(res)):
     'nearest_neighbor_corr':nn_corr, 'min_distance':mindist, 'min_distance_corr':mindist_corr, 'true_dist':true_dist, 'true_dist_corr':true_dist_corr,
     'nearest_neighbor2':nn2, 'nearest_neighbor2_corr':nn2_corr, 'min_distance2':mindist2, 'min_distance_corr2':mindist2_corr, 'true_dist2_corr':true_dist2_corr,
     'nearest_neighbor3':nn3, 'nearest_neighbor3_corr':nn3_corr, 'min_distance3':mindist3, 'min_distance_corr3':mindist3_corr, 'true_dist3_corr':true_dist3_corr})
-    cat.to_csv('ngc3621_'+str(res[i])+'pc.csv')
+    cat.to_csv('ngc3621_'+str(res[i])+'pc.csv', index=False)
+
+    ###LETS GATHER SOME STATS###
+    mean_dist[i] = [np.mean(mindist_corr), np.mean(mindist2_corr), np.mean(mindist3_corr)]
+    percentiles[i] = [np.percentile(true_dist_corr, 90),np.percentile(true_dist2_corr, 90),np.percentile(true_dist3_corr, 90),
+    np.percentile(true_dist_corr, 75),np.percentile(true_dist2_corr, 75),np.percentile(true_dist3_corr, 75)]
+    beam_sep[i] = [np.mean(mindist_corr)/tab['BEAMFWHM_PC'][0], np.mean(mindist2_corr)/tab['BEAMFWHM_PC'][0], np.mean(mindist3_corr)/tab['BEAMFWHM_PC'][0]]
     print(str(res[i])+'pc done')
+print('Gathering stats...')
+
+peak_stats = pd.DataFrame({'res_pc':res, 'mean_dist_nn':mean_dist[:,0], 'mean_dist_nn2':mean_dist[:,1],
+'mean_dist_nn3':mean_dist[:,2], '90th_nn':percentiles[:,0], '90th_nn2':percentiles[:,1], '90th_nn3':percentiles[:,2],
+'75th_nn':percentiles[:,3], '75th_nn2':percentiles[:,4], '75th_nn3':percentiles[:,5], 'mean_beam_sep':beam_sep[:,0],
+'mean_beam_sep2':beam_sep[:,1], 'mean_beam_sep3':beam_sep[:,2]})
+
+peak_stats.to_csv('peak_stats.csv', index=False)
