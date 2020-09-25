@@ -17,16 +17,7 @@ for i in range(len(res)):
     xs = x*np.cos(np.deg2rad(x))
     vel = tab['VCTR_KMS']
 
-    ##MATCHED
-    match_cat = pd.read
 
-    #plt.scatter(x,y, c=vel, cmap='RdBu', alpha=0.75)
-    #plt.xlabel('DEC')
-    #plt.ylabel('R.A.')
-    #plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)', fontsize=15)
-    #plt.colorbar(label='Velocity km/s')
-    #plt.savefig('ngc3621_peaks'+str(res[i])+'pc.pdf')
-    #plt.close()
 
     plt.scatter(xs,y, c=vel, cmap='RdBu', alpha=0.75)
     plt.xlabel('R.A.')
