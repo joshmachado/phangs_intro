@@ -20,7 +20,7 @@ for i in range(len(res)):
     distance = np.array(tab['DISTANCE_PC'])
     x = np.array(tab['XCTR_DEG'])
     y = np.array(tab['YCTR_DEG'])
-    xs = x*np.cos(np.deg2rad(x)) #Spherical correction? RA = RAcos(Dec)
+    xs = x*np.cos(np.deg2rad(y)) #Spherical correction? RA = RAcos(Dec)
     peaks = np.array([cloudnum,x,y])
     dist = np.zeros((len(x),len(x)))
     corr_dist = np.zeros((len(x),len(x)))
