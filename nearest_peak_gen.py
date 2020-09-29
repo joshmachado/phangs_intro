@@ -11,7 +11,7 @@ loc = '/Users/josh/projects/intro'
 source = 'ngc3621'
 res = np.array([60,90,120,150])
 mean_dist = np.zeros([4,3])
-beam_sep = np.zeros([4,3])
+mean_beam_sep = np.zeros([4,3])
 percentiles = np.zeros([4,15]) #5th, 16th, 50th, 84th, 95th
 perc = [5,16,50,84,95]
 for i in range(len(res)):
@@ -47,24 +47,26 @@ for i in range(len(res)):
         mindist3[k] = np.deg2rad(dist[k,int(ind3[0])])*distance[0]
         nn3[k] = int(ind3[0])+1
 
+
+    ### LETS GATHER SOME STATS ###
+    mean_dist[i] = [np.mean(mindist), np.mean(mindist2), np.mean(mindist3)]
     mean_cloud_sep = [mindist, mindist2, mindist3]/np.nanmean(tab['RAD_PC'])
+    beam_sep = [mindist, mindist2, mindist3]/tab['BEAMFWHM_PC'][0]
+    percentiles[i] = [np.percentile(mindist, 5), np.percentile(mindist2, 5), np.percentile(mindist3, 5),
+    np.percentile(mindist, 16), np.percentile(mindist2, 16), np.percentile(mindist3, 16),
+    np.percentile(mindist, 50), np.percentile(mindist2, 50), np.percentile(mindist3, 50),
+    np.percentile(mindist, 84), np.percentile(mindist2, 84), np.percentile(mindist3, 84),
+    np.percentile(mindist, 95), np.percentile(mindist2, 95), np.percentile(mindist3, 95)] ##Go back and make this a loop
+    mean_beam_sep[i] = [np.mean(mindist), np.mean(mindist2), np.mean(mindist3)]/tab['BEAMFWHM_PC'][0]
 
 
     ### Compile info into dataframe ###
     cat = pd.DataFrame({'cloudnum':cloudnum, 'x':x, 'corr_x':xs, 'y':y,
     'nn_index':nn,  'nn2_index':nn2, 'nn3_index':nn3,
     'min_dist':mindist, 'min_dist2nd':mindist2, 'min_dist3rd':mindist3,
-    'mean_cloud_sep_nn':mean_cloud_sep[0], 'mean_cloud_sep_nn2':mean_cloud_sep[1], 'mean_cloud_sep_nn3':mean_cloud_sep[2]})
+    'mean_cloud_sep_nn':mean_cloud_sep[0], 'mean_cloud_sep_nn2':mean_cloud_sep[1], 'mean_cloud_sep_nn3':mean_cloud_sep[2],
+    'beam_sep_nn':beam_sep[0], 'beam_sep_nn2':beam_sep[1], 'beam_sep_nn3':beam_sep[2]})
     cat.to_csv(str(source)+'_'+str(res[i])+'pc_cloud_stats.csv', index=False)
-
-    ### LETS GATHER SOME STATS ###
-    mean_dist[i] = [np.mean(mindist), np.mean(mindist2), np.mean(mindist3)]
-    percentiles[i] = [np.percentile(mindist, 5), np.percentile(mindist2, 5), np.percentile(mindist3, 5),
-    np.percentile(mindist, 16), np.percentile(mindist2, 16), np.percentile(mindist3, 16),
-    np.percentile(mindist, 50), np.percentile(mindist2, 50), np.percentile(mindist3, 50),
-    np.percentile(mindist, 84), np.percentile(mindist2, 84), np.percentile(mindist3, 84),
-    np.percentile(mindist, 95), np.percentile(mindist2, 95), np.percentile(mindist3, 95)] ##Go back and make this a loop
-    beam_sep[i] = [np.mean(mindist), np.mean(mindist2), np.mean(mindist3)]/tab['BEAMFWHM_PC'][0]
     print(str(res[i])+'pc done')
 print('Gathering stats...')
 
@@ -75,6 +77,6 @@ peak_stats = pd.DataFrame({'res_pc':res,
 '50th_nn':percentiles[:,6], '50th_nn2':percentiles[:,7], '50th_nn3':percentiles[:,8],
 '84th_nn':percentiles[:,9], '84th_nn2':percentiles[:,10], '84th_nn3':percentiles[:,11],
 '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
-'mean_beam_sep':beam_sep[:,0],'mean_beam_sep2':beam_sep[:,1], 'mean_beam_sep3':beam_sep[:,2]})
+'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
 
 peak_stats.to_csv(str(source)+'_stats.csv', index=False)

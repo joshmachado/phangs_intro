@@ -7,9 +7,10 @@ loc = '/Users/josh/projects/intro'
 
 #fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
 #fp = '/data/kant/0/sun.1608/PHANGS/ALMA/v3p4-CPROPS/STv1p5/90pc_homogenized/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
+source = 'ngc3621'
 res = np.array([60,90,120,150])
 for i in range(len(res)):
-    cat = pd.read_csv('ngc3621_'+str(res[i])+'pc.csv')
+    cat = pd.read_csv(str(source)+'_'+str(res[i])+'pc_cloud_stats.csv')
     fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
     tab = Table.read(fp)
     x = np.array(tab['XCTR_DEG'])
@@ -17,8 +18,7 @@ for i in range(len(res)):
     xs = x*np.cos(np.deg2rad(x))
     vel = tab['VCTR_KMS']
 
-
-
+    ### General Plot of Peaks ###
     plt.scatter(xs,y, c=vel, cmap='RdBu', alpha=0.75)
     plt.xlabel('R.A.')
     plt.ylabel('DEC')
@@ -28,28 +28,75 @@ for i in range(len(res)):
     plt.close()
     print(str(res[i])+'pc peak')
 
-    plt.hist(cat.true_dist_corr, bins = (np.linspace(0, 500, 10)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    ### Plotting nearest neighbor separation (PC) ###
+    plt.hist(cat.min_dist, bins = (np.linspace(0, 500, 10)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
     #14 sources above 500pc
     plt.xlabel('Distance to Nearest Neighbor (pc)')
     plt.ylabel('Counts')
     plt.legend()
     plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
-    plt.savefig(loc+'/plots/ngc3621_hist'+str(res[i])+'pc.pdf')
+    plt.savefig(loc+'/plots/ngc3621_pc_hist'+str(res[i])+'pc.pdf')
     plt.close()
-
-    plt.hist(cat.true_dist2_corr, bins = (np.linspace(0, 700, 14)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.hist(cat.min_dist2nd, bins = (np.linspace(0, 700, 14)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
     plt.xlabel('Distance to 2nd Nearest Neighbor (pc)')
     plt.ylabel('Counts')
     plt.legend()
     plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
-    plt.savefig(loc+'/plots/ngc3621_hist_2nd'+str(res[i])+'pc.pdf')
+    plt.savefig(loc+'/plots/ngc3621_pc_hist_2nd'+str(res[i])+'pc.pdf')
     plt.close()
-
-    plt.hist(cat.true_dist3_corr, bins = (np.linspace(0, 700, 14)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.hist(cat.min_dist3rd, bins = (np.linspace(0, 700, 14)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
     plt.xlabel('Distance to 3rd Nearest Neighbor (pc)')
     plt.ylabel('Counts')
     plt.legend()
     plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
-    plt.savefig(loc+'/plots/ngc3621_hist_3rd'+str(res[i])+'pc.pdf')
+    plt.savefig(loc+'/plots/ngc3621_pc_hist_3rd'+str(res[i])+'pc.pdf')
     plt.close()
     print(str(res[i])+'pc hist')
+
+    ### Plotting nearest neighbor separation (beam) ###
+    plt.hist(cat.beam_sep_nn, bins = (np.linspace(0, 6, 12)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to Nearest Neighbor (beams)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_beam_hist'+str(res[i])+'pc.pdf')
+    plt.close()
+    plt.hist(cat.beam_sep_nn2, bins = (np.linspace(0, 8, 16)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to 2nd Nearest Neighbor (beams)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_beam_hist_2nd'+str(res[i])+'pc.pdf')
+    plt.close()
+    plt.hist(cat.beam_sep_nn3, bins = (np.linspace(0, 10, 20)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to 3rd Nearest Neighbor (beams)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_beam_hist_3rd'+str(res[i])+'pc.pdf')
+    plt.close()
+    print(str(res[i])+'pc beam sep hist')
+
+    ### Plotting nearest neighbor separation (mean cloud distance) ###
+    plt.hist(cat.mean_cloud_sep_nn, bins = (np.linspace(0, 6, 12)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to Nearest Neighbor (mean cloud radii)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_cloudsize_hist'+str(res[i])+'pc.pdf')
+    plt.close()
+    plt.hist(cat.mean_cloud_sep_nn2, bins = (np.linspace(0, 8, 16)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to 2nd Nearest Neighbor (mean cloud radii)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_cloudsize_hist_2nd'+str(res[i])+'pc.pdf')
+    plt.close()
+    plt.hist(cat.mean_cloud_sep_nn3, bins = (np.linspace(0, 10, 20)), label=r'Eucledian (N = '+str(len(x))+')', alpha = 0.5)
+    plt.xlabel('Distance to 3rd Nearest Neighbor (mean cloud radii)')
+    plt.ylabel('Counts')
+    plt.legend()
+    plt.title('NGC3621 ('+str(res[i])+'pc_homogenized)')
+    plt.savefig(loc+'/plots/ngc3621_cloudsize_hist_3rd'+str(res[i])+'pc.pdf')
+    plt.close()
+    print(str(res[i])+'pc cloud size sep hist')
