@@ -1,13 +1,22 @@
-cloud_stats.README
-##################################
-### Guide to data stored in    ###
-### cloud_stats.csv            ###
-##################################
+res_stats.README
+######################################
+###     Guide to data stored in    ###
+### [source]_[res]_cloud_stats.csv ###
+######################################
 
-x:
-xs:
-y:
+cloudnum: from default catalog
+x: default RA from tab['XCTR_DEG']
+xs: corrected RA. xs = x*cosy
+y: default DEC from tab['YCTR_DEG']
+nn_index: cloud num of nearest neighbor
+nn2_index: cloud num of 2nd nearest neighbor
+nn3_index: cloud num of 3rd nearest neighbor
+min_dist: distance to nearest neighbor (pc)
+min_dist2nd: distance to 2nd nearest neighbor (pc)
+min_dist3rd: distance to 3rd nearest neighbor (pc)
+mean_cloud_sep_nn: This is the distance to nearest neighbor expressed in MEAN CLOUD SIZE RADII. For cloud A, distance to nearest cloud (B) is expressed as DIST_A_TO_B(pc)/MEAN_CLOUD_RADIUS(pc). Mean cloud radius is determined as mean of tab['RAD_PC']
+mean_cloud_sep_nn2: above, but to 2nd nearest neighbor
+mean_cloud_sep_nn3: above, but to 3rd nearest neighbor
 
-
-mean_cloud_sep: This is the distance expressed in MEAN CLOUD SIZE RADII. For cloud A, distance to nearest cloud (B) is expressed as DIST_A_TO_B(pc)/MEAN_CLOUD_RADIUS(pc). Mean cloud radius is determined as mean of tab['RAD_PC']
+### WILL ADD ###
 cloud_sep: This is the distance expressed in variable CLOUD SIZE RADII. For cloud A, distance to nearest cloud (B) is expressed as DIST_A_TO_B(pc)/CLOUD_A_RADIUS(pc)

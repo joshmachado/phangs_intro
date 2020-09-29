@@ -55,7 +55,7 @@ for i in range(len(res)):
     'nn_index':nn,  'nn2_index':nn2, 'nn3_index':nn3,
     'min_dist':mindist, 'min_dist2nd':mindist2, 'min_dist3rd':mindist3,
     'mean_cloud_sep_nn':mean_cloud_sep[0], 'mean_cloud_sep_nn2':mean_cloud_sep[1], 'mean_cloud_sep_nn3':mean_cloud_sep[2]})
-    cat.to_csv(str(source)+'_'+str(res[i])+'pc.csv', index=False)
+    cat.to_csv(str(source)+'_'+str(res[i])+'pc_cloud_stats.csv', index=False)
 
     ### LETS GATHER SOME STATS ###
     mean_dist[i] = [np.mean(mindist), np.mean(mindist2), np.mean(mindist3)]
