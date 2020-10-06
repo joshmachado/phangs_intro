@@ -15,7 +15,7 @@ for i in range(len(res)):
     tab = Table.read(fp)
     x = np.array(tab['XCTR_DEG'])
     y = np.array(tab['YCTR_DEG'])
-    xs = x*np.cos(np.deg2rad(x))
+    xs = x*np.cos(np.deg2rad(y))
     vel = tab['VCTR_KMS']
 
     ### General Plot of Peaks ###
