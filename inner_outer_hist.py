@@ -10,20 +10,20 @@ loc = '/Users/josh/projects/intro'
 
 want to plot separations based on inner / outer
 
-tab = Table.read('ngc3621_12m+7m+tp_co21_60pc_props.fits.bz2')
-cat = pd.read_csv('ngc3621_60pc_cloud_stats.csv')
+tab = Table.read('ngc3621_12m+7m+tp_co21_150pc_props.fits.bz2')
+cat = pd.read_csv('ngc3621_150pc_cloud_stats.csv')
 inner = np.zeros(len(cat))
 outer = np.zeros(len(cat))
 for i in range(len(x)):
     if tab['RGAL_KPC'][i] < np.median(tab['RGAL_KPC']):
-        inner[i] = cat.min_dist[i]
+        inner[i] = cat.min_dist3rd[i]
     else:
-        outer[i] = cat.min_dist[i]
+        outer[i] = cat.min_dist3rd[i]
 
 inner = inner[inner != 0]
 outer = outer[outer != 0]
-plt.hist(inner, bins = (np.linspace(0, 400, 10)), label='Inner', alpha=0.5)
-plt.hist(outer, bins = (np.linspace(0, 400, 10)), label='Outer', alpha=0.5)
+plt.hist(inner, bins = (np.linspace(0, 400, 15)), label='Inner', alpha=0.5)
+plt.hist(outer, bins = (np.linspace(0, 400, 15)), label='Outer', alpha=0.5)
 plt.show()
 
 #fp = '/Users/josh/projects/intro/ngc3621_12m+7m+tp_co21_90pc_props.fits.bz2'
