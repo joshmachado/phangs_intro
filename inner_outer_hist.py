@@ -26,4 +26,5 @@ for i in range(len(res)):
     plt.hist(outer, bins = (np.linspace(res[i], 600, 15)), label='Outer', alpha=0.5)
     plt.legend()
     plt.title('NGC3621 at '+str(res[i])+'pc resolution - Cutoff = '+str(np.round(cutoff, 2))+'kpc')
-    plt.show()
+    plt.savefig(loc+'/plots/inner_outer_'+str(res[i])+'pc')
+    plt.close()
