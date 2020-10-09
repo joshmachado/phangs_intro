@@ -25,6 +25,8 @@ for i in range(len(res)):
     plt.hist(inner, bins = (np.linspace(res[i], 600, 15)), label='Inner', alpha=0.5)
     plt.hist(outer, bins = (np.linspace(res[i], 600, 15)), label='Outer', alpha=0.5)
     plt.legend()
+    plt.xlabel('Distance to 3rd Nearest Neighbor (pc)')
+    plt.ylabel('Counts')
     plt.title('NGC3621 at '+str(res[i])+'pc resolution - Cutoff = '+str(np.round(cutoff, 2))+'kpc')
     plt.savefig(loc+'/plots/inner_outer_'+str(res[i])+'pc')
     plt.close()
