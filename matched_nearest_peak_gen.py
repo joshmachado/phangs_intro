@@ -5,15 +5,15 @@ import matplotlib.cm as cm
 import pandas as pd
 
 
-loc = '/Users/josh/projects/intro/matched'
-source = 'ngc3621'
+source = 'ngc1433'
+loc = '/Users/josh/projects/intro/'
 res = np.array([60,90,120,150])
 mean_dist = np.zeros([4,3])
 mean_beam_sep = np.zeros([4,3])
 percentiles = np.zeros([4,15]) #5th, 16th, 50th, 84th, 95th
 perc = [5,16,50,84,95]
 for i in range(len(res)):
-    fp = '/Users/josh/projects/intro/matched/ngc3621_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
+    fp = '/Users/josh/projects/intro/'+source+'/matched/'+source+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
     tab = Table.read(fp)
     cloudnum = np.array(tab['CLOUDNUM'])
     distance = np.array(tab['DISTANCE_PC'])
@@ -64,7 +64,7 @@ for i in range(len(res)):
     'min_dist':mindist, 'min_dist2nd':mindist2, 'min_dist3rd':mindist3,
     'mean_cloud_sep_nn':mean_cloud_sep[0], 'mean_cloud_sep_nn2':mean_cloud_sep[1], 'mean_cloud_sep_nn3':mean_cloud_sep[2],
     'beam_sep_nn':beam_sep[0], 'beam_sep_nn2':beam_sep[1], 'beam_sep_nn3':beam_sep[2]})
-    cat.to_csv(str(source)+'_'+str(res[i])+'pc_cloud_stats.csv', index=False)
+    cat.to_csv(loc+'/'+source+'/matched/'+source+'_'+str(res[i])+'pc_cloud_stats.csv', index=False)
     print(str(res[i])+'pc done')
 print('Gathering stats...')
 
@@ -77,4 +77,4 @@ peak_stats = pd.DataFrame({'res_pc':res,
 '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
 'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
 
-peak_stats.to_csv(str(source)+'_stats.csv', index=False)
+peak_stats.to_csv(loc+'/'+source+'/matched/'+source+'_stats.csv', index=False)
