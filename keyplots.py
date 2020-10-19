@@ -5,17 +5,17 @@ import matplotlib.cm as cm
 import pandas as pd
 import matplotlib.lines as mlines
 
-loc = '/Users/josh/projects/intro/ngc3621/'
+loc = '/Users/josh/projects/intro/'
+source = 'ngc2835'
 
 sep = np.zeros([3,3,4,2])
 msep = np.zeros([3,3,4,2])
 err = np.zeros([3,3,2,4])
 merr = np.zeros([3,3,2,4])
 res = [60,90,120,150]
-source = 'ngc3621'
 for i in range(len(res)):
-    cat = pd.read_csv(loc+str(source)+'_'+str(res[i])+'pc_cloud_stats.csv')
-    match_cat = pd.read_csv(loc+'/matched/'+str(source)+'_'+str(res[i])+'pc_cloud_stats.csv')
+    cat = pd.read_csv(loc+source+'/'+source+'_'+str(res[i])+'pc_cloud_stats.csv')
+    match_cat = pd.read_csv(loc+source+'/matched/'+str(source)+'_'+str(res[i])+'pc_cloud_stats.csv')
 
     #Separation in PC
     pc = cat['min_dist']
@@ -106,7 +106,7 @@ plt.xlabel('Resolution (pc)')
 plt.ylabel('Distance to Nearest Neighbor (pc)')
 plt.xticks([60,90,120,150])
 plt.title(str(source).upper(), fontsize=16)
-plt.savefig(loc+'plots/'+str(source)+'_pc_sep_summary.pdf')
+plt.savefig(loc+source+'/plots/'+str(source)+'_pc_sep_summary.pdf')
 plt.close()
 
 #PLOTTING BEAM SEPERATION DATA
@@ -128,10 +128,10 @@ plt.errorbar(msep[1,2,:,0]+7, msep[1,2,:,1], c='#a65628', xerr=None, yerr=merr[1
 plt.legend(handles=[first, second, third, homogenized, matched])
 plt.xlabel('Resolution (pc)')
 plt.ylabel('Distance to Nearest Neighbor (beams)')
-plt.ylim(0,10)
+#plt.ylim(0,np.max(merr[1,2]+5))
 plt.xticks([60,90,120,150])
 plt.title(str(source).upper(), fontsize=16)
-plt.savefig(loc+'plots/'+str(source)+'_beam_sep_summary.pdf')
+plt.savefig(loc+source+'/plots/'+str(source)+'_beam_sep_summary.pdf')
 plt.close()
 
 #PLOTTING MEAN CLOUD RADII SEPERATION DATA
@@ -155,5 +155,5 @@ plt.xlabel('Resolution (pc)')
 plt.ylabel('Distance to Nearest Neighbor (mean cloud radii)')
 plt.xticks([60,90,120,150])
 plt.title(str(source).upper(), fontsize=16)
-plt.savefig(loc+'plots/'+str(source)+'_cloud_sep_summary.pdf')
+plt.savefig(loc+source+'/plots/'+str(source)+'_cloud_sep_summary.pdf')
 plt.close()
