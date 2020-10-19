@@ -1,5 +1,5 @@
 
 *.tar
 /ngc3621/*.fits
-.DS_Store
+*.DS_Store
 /new_props
