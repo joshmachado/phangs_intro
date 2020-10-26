@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 import pandas as pd
 
 
-source = 'ngc6300'
+source = 'ngc3621'
 loc = '/Users/josh/projects/intro/'
 res = np.array([90])
 mean_dist = np.zeros([4,3])
