@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 import pandas as pd
 
 
-source = 'ngc3621'
+source = 'ngc1433'
 loc = '/Users/josh/projects/intro'
 res = np.array([60,90,120,150])
 mean_dist = np.zeros([4,3])
@@ -77,4 +77,4 @@ peak_stats = pd.DataFrame({'res_pc':res,
 '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
 'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
 
-peak_stats.to_csv(loc+'/'+source+'/'+source+'_'+str(res[i])+'pc_stats.csv', index=False)
+peak_stats.to_csv(loc+'/'+source+'/'+source+'_stats.csv', index=False)

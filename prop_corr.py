@@ -14,27 +14,20 @@ for j in range(len(res)):
             tab = Table.read(fp)
             cat = pd.read_csv(stats)
             df = pd.DataFrame(cat)
-            mlum_nn = np.zeros(len(cat))
-            mlum_nn2 = np.zeros(len(cat))
-            mlum_nn3 = np.zeros(len(cat))
-            for k in range(len(stats)):
-                cloudnum = int(cat['cloudnum'][k])
-                nn = int(cat['nn_index'][cloudnum-1])
-                nn2 = int(cat['nn2_index'][cloudnum-1])
-                nn3 = int(cat['nn3_index'][cloudnum-1])
-                if nn == len(tab):
-                    mlum_nn[k] = tab['MLUM_MSUN'][nn-1]
-                else:
-                    mlum_nn[k] = tab['MLUM_MSUN'][nn]
-                if nn2 == len(tab):
-                    mlum_nn2[k] = tab['MLUM_MSUN'][nn2-1]
-                else:
-                    mlum_nn2[k] = tab['MLUM_MSUN'][nn2]
-                if nn3 == len(tab):
-                    mlum_nn3[k] = tab['MLUM_MSUN'][nn3-1]
-                else:
-                    mlum_nn3[k] = tab['MLUM_MSUN'][nn3]
-            df['mlum_nn'] = mlum_nn
-            df['mlum_nn2'] = mlum_nn2
-            df['mlum_nn3'] = mlum_nn3
-            df.to_csv('/Users/josh/projects/intro/'+str(sources[i])+'/'+str(sources[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
+            prop = ['MLUM_MSUN', 'SIGV_KMS']
+            prop_nn = np.zeros(len(cat))
+            prop_nn2 = np.zeros(len(cat))
+            prop_nn3 = np.zeros(len(cat))
+            for z in range(len(prop)):
+                for k in range(len(cat)):
+                    cloudnum = int(cat['cloudnum'][k])
+                    nn = int(cat['nn_index'][cloudnum-1])
+                    nn2 = int(cat['nn2_index'][cloudnum-1])
+                    nn3 = int(cat['nn3_index'][cloudnum-1])
+                    prop_nn[k] = tab[prop[z]][nn-1]
+                    prop_nn2[k] = tab[prop[z]][nn2-1]
+                    prop_nn3[k] = tab[prop[z]][nn3-1]
+                df[str(prop[z])+'_nn'] = prop_nn
+                df[str(prop[z])+'_nn2'] = prop_nn2
+                df[str(prop[z])+'_nn3'] = prop_nn3
+                df.to_csv('/Users/josh/projects/intro/'+str(sources[i])+'/'+str(sources[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
