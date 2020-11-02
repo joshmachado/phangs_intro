@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.lines as mlines
 
 loc = '/Users/josh/projects/intro/'
-source = 'ngc6300'
+source = 'ngc1433'
 
 sep = np.zeros([3,3,4,2])
 msep = np.zeros([3,3,4,2])

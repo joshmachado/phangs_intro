@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 import pandas as pd
 
 
-source = 'ngc1433'
+source = 'ngc6300'
 loc = '/Users/josh/projects/intro'
 res = np.array([60,90,120,150])
 mean_dist = np.zeros([4,3])
@@ -19,7 +19,7 @@ for i in range(len(res)):
     distance = np.array(tab['DISTANCE_PC'])
     x = np.array(tab['XCTR_DEG'])
     y = np.array(tab['YCTR_DEG'])
-    xs = x*np.cos(np.deg2rad(y)) #correction RA = RAcos(Dec)
+    xs = (x - np.mean(x))*np.cos(np.deg2rad(y)) #correction RA = RAcos(Dec)
     dist = np.zeros((len(x),len(x)))
     nn = np.zeros(len(x)) #stores CloudNum of nearest neighbor
     mindist = np.zeros(len(x)) #stores distance to nearest neighbor
