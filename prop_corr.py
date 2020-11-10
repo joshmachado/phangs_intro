@@ -14,7 +14,7 @@ for j in range(len(res)):
             tab = Table.read(fp)
             cat = pd.read_csv(stats)
             df = pd.DataFrame(cat)
-            prop = ['MLUM_MSUN', 'SIGV_KMS']
+            prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
             prop_nn = np.zeros(len(cat))
             prop_nn2 = np.zeros(len(cat))
             prop_nn3 = np.zeros(len(cat))
