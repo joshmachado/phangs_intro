@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 sources = ['ngc1433', 'ngc3621', 'ngc6300', 'ngc2835']
 res = [60, 90, 120, 150]
-prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
+prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
 stats = np.zeros([len(prop), 6])
 for i in range(len(res)):
     df = pd.DataFrame(columns = ('source', 'first_second', 'pval_first_second', 'first_third', 'pval_first_third',
@@ -32,7 +32,7 @@ for i in range(len(res)):
                 plt.xlabel(prop[k])
                 plt.ylabel(prop[k])
                 plt.title(sources[j]+' '+str(res[i])+'pc resolution - ' + prop[k])
-                plt.savefig('/Users/josh/projects/intro/stats/corr_plots/first_second/'+prop[k]+'_'+str(res[i])+'pc_'+sources[j]+'.pdf')
+                plt.savefig('/Users/josh/projects/intro/stats/corr_plots/second_third/'+prop[k]+'_'+str(res[i])+'pc_'+sources[j]+'.pdf')
                 plt.close()
                 stats[k] = [fs[0], fs[1], ft[0], ft[1], st[0], st[1]]
                 df.loc[j] = [str(sources[j]), stats[0][0], stats[0][1], stats[0][2], stats[0][3], stats[0][4], stats[0][5]]
