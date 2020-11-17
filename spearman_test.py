@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 sources = ['ngc1433', 'ngc3621', 'ngc6300', 'ngc2835']
 res = [60, 90, 120, 150]
-prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
+prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
 stats = np.zeros([len(prop), 6])
 for i in range(len(res)):
     df = pd.DataFrame(columns = ('source', 'first_second', 'pval_first_second', 'first_third', 'pval_first_third',
@@ -19,6 +19,12 @@ for i in range(len(res)):
                 first = np.array(cat[str(prop[k])+'_nn'])
                 second = np.array(cat[str(prop[k])+'_nn2'])
                 third = np.array(cat[str(prop[k])+'_nn3'])
+                plt.scatter(first, second)
+                plt.xlabel(prop[k])
+                plt.ylabel(prop[k])
+                plt.title(sources[j]+' '+str(res[i])+'pc resolution - ' + prop[k])
+                plt.savefig('/Users/josh/projects/intro/stats/corr_plots/'+prop[k]+'_'+str(res[i])+'pc_'+sources[j]+'.pdf')
+                plt.close()
                 fs = scipy.stats.spearmanr(first, second, nan_policy='omit')
                 ft = scipy.stats.spearmanr(first, third, nan_policy='omit')
                 st = scipy.stats.spearmanr(second, third, nan_policy='omit')
