@@ -214,8 +214,8 @@ def pull_props(noise, source=[], res=[]):
 
 
 def pull_pairs(source, res, noise, prop):
-    loc = '/Users/josh/projects/intro'
-    global first_pairs
+    loc = '/Users/josh/projects/intro/'
+    global first_pairs, second_pairs, third_pairs
     props_dict = {
     "distance": ['min_dist', 'min_dist2nd', 'min_dist3rd'],
     "mean_cloud_sep": ['mean_cloud_sep_nn', 'mean_cloud_sep_nn2', 'mean_cloud_sep_nn3'],
@@ -229,20 +229,20 @@ def pull_pairs(source, res, noise, prop):
 
     if noise=='homogenized':
         fp = loc+str(source)+'/'+str(source)+'_'+str(res)+'pc_cloud_stats.csv'
-        if os.path.isfile(fp) == True:
+        if os.path.isfile(fp):
             cat = pd.read_csv(fp)
-            cloud = cat('cloudnum')
-            nn_index, nn2_index, nn3_index = cat('nn_index'), cat('nn2_index'), cat('nn3_index')
-            nn_prop, nn2_prop, nn3_prop = cat(str(props_dict[prop][0])), cat(str(props_dict[prop][1])), cat(str(props_dict[prop][2]))
-            first_pairs = pd.DataFrame({'cloud_index':cloud, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
+            cloud = cat['cloudnum']
+            nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
+            nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+            first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
             second_pairs = pd.DataFrame({'cloud_index':cloud, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
             third_pairs = pd.DataFrame({'cloud_index':cloud, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-            return first_pairs
+            return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna()
 
 
     if noise=='matched':
         fp = loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2'
-        if os.path.isfile(fp) == True:
+        if os.path.isfile(fp):
             cat = pd.read_csv(fp)
             cloud = cat('cloudnum')
             nn_index, nn2_index, nn3_index = cat('nn_index'), cat('nn2_index'), cat('nn3_index')
@@ -250,4 +250,4 @@ def pull_pairs(source, res, noise, prop):
             first_pairs = pd.DataFrame({'cloud_index':cloud, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
             second_pairs = pd.DataFrame({'cloud_index':cloud, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
             third_pairs = pd.DataFrame({'cloud_index':cloud, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-            return first_pairs
+            return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna()
