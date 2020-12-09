@@ -310,4 +310,6 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
                     axes[j].legend()
         plt.show()
         plt.close()
-        return radregion
+        return radregion[1:len(radregion)]
+        ### This selection condition on radregion removes first array which is always empty.
+        #### Yes I know there are better ways to do this, but it was convenient for some reason, so this is how I did it
