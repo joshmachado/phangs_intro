@@ -293,23 +293,68 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
         radregion = []
         for i in range(len(rad_bins)):
             for j in range(len(pairs[3])):
-                if rad_bins[i-1] < tab['RGAL_KPC'][ref[j]] < rad_bins[i]:
+                if tab['RGAL_KPC'][ref[j]] > rad_bins[i-1] and tab['RGAL_KPC'][ref[j]] < rad_bins[i]:
                     #^ this line checks the index of each cloud to see if it lies within a radial bin.
                     # If it DOES, then the properties of the first, second and third nearest neighbors are retrieved
                     pairs_in_bin[j] = pair_list[j]
             radregion.append(pairs_in_bin[~(pairs_in_bin==0).all(1)])
+        radregion = radregion[1:len(radregion)]
         if show_plot == True:
-            fig, axes = plt.subplots(len(radregion), 1, figsize=(10,10))
+            fig_size = (5,10)
+            fig1, ax1 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS NN PROP
+            fig2, ax2 = plt.subplots(len(radregion), 1, figsize=fig_size) #1st NN PROP VS 2nd NN PROP
+            fig3, ax3 = plt.subplots(len(radregion), 1, figsize=fig_size) #2nd NN PROP VS 3rd NN PROP
+            fig4, ax4 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS 3rd NN PROP
             if i!=0:
-                for j in range(len(radregion)):
-                    #PLOT CLOUD PROP v 1st NEIGHBOR PROP
-                    axes[j].scatter(radregion[j][:,4], radregion[j][:,5], alpha=0.3, label='N = '+str(int(len(radregion[j][:,4])))+', '+str('%.2f' % rad_bins[i-1])+' < RGAL < '+str('%.2f' % rad_bins[i])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[j][:,4], radregion[j][:,5], nan_policy='omit')[0]))
+                for k in range(len(radregion)):
 
-                    axes[j].set_ylabel(prop)
-                    axes[j].legend()
-                    axes[j].legend()
+                    #PLOT CLOUD PROP v 1st NEIGHBOR PROP
+                    ax1[k].scatter(radregion[k][:,4], radregion[k][:,5], alpha=0.3, label='N = '+str(int(len(radregion[k][:,4])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,4], radregion[k][:,5], nan_policy='omit')[0]))
+                    ax1[k].legend()
+                    ax1[k].get_xaxis().set_visible(False)
+
+                    #PLOT 1ST NN PROP v 2ND NEIGHBOR PROP
+                    ax2[k].scatter(radregion[k][:,5], radregion[k][:,6], alpha=0.3, label='N = '+str(int(len(radregion[k][:,5])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,5], radregion[k][:,6], nan_policy='omit')[0]))
+                    ax2[k].legend()
+                    ax2[k].get_xaxis().set_visible(False)
+
+                    #PLOT 2ND NN PROP v 3RD NEIGHBOR PROP
+                    ax3[k].scatter(radregion[k][:,6], radregion[k][:,7], alpha=0.3, label='N = '+str(int(len(radregion[k][:,6])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,6], radregion[k][:,7], nan_policy='omit')[0]))
+                    ax3[k].legend()
+                    ax3[k].get_xaxis().set_visible(False)
+
+                    #PLOT CLOUD PROP v 3RD NEIGHBOR PROP
+                    ax4[k].scatter(radregion[k][:,4], radregion[k][:,7], alpha=0.3, label='N = '+str(int(len(radregion[k][:,4])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,4], radregion[k][:,7], nan_policy='omit')[0]))
+                    ax4[k].legend()
+                    ax4[k].get_xaxis().set_visible(False)
+
+        ax1[0].set_title('Cloud vs Nearest Neighbor')
+        ax1[k].set_xlabel('Cloud '+prop)
+        ax1[k].get_xaxis().set_visible(True)
+        fig1.text(0.01,0.5, 'Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig1.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+
+        ax2[0].set_title('Nearest Neighbor vs. 2nd Nearest Neighbor')
+        ax2[k].set_xlabel('Nearest Neighbor '+prop)
+        ax2[k].get_xaxis().set_visible(True)
+        fig2.text(0.01,0.5, '2nd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig2.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+
+        ax3[0].set_title('2nd vs 3rd Nearest Neighbor')
+        ax3[k].set_xlabel('2nd Nearest Neighbor '+prop)
+        ax3[k].get_xaxis().set_visible(True)
+        fig3.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig3.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+
+        ax4[0].set_title('Cloud vs 3rd Nearest Neighbor')
+        ax4[k].set_xlabel('Cloud '+prop)
+        ax4[k].get_xaxis().set_visible(True)
+        fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+
         plt.show()
         plt.close()
-        return radregion[1:len(radregion)]
+
+        return radregion
         ### This selection condition on radregion removes first array which is always empty.
         #### Yes I know there are better ways to do this, but it was convenient for some reason, so this is how I did it
