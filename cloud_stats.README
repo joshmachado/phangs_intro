@@ -1,4 +1,6 @@
 cloud_stats.README
+
+
 ######################################
 ###     Guide to data stored in    ###
 ### [source]_[res]_cloud_stats.csv ###
@@ -17,9 +19,6 @@ min_dist3rd: distance to 3rd nearest neighbor (pc)
 mean_cloud_sep_nn: This is the distance to nearest neighbor expressed in MEAN CLOUD SIZE RADII. For cloud A, distance to nearest cloud (B) is expressed as DIST_A_TO_B(pc)/MEAN_CLOUD_RADIUS(pc). Mean cloud radius is determined as mean of tab['RAD_PC']
 mean_cloud_sep_nn2: above, but to 2nd nearest neighbor
 mean_cloud_sep_nn3: above, but to 3rd nearest neighbor
-
-### WILL ADD ###
-cloud_sep: This is the distance expressed in variable CLOUD SIZE RADII. For cloud A, distance to nearest cloud (B) is expressed as DIST_A_TO_B(pc)/CLOUD_A_RADIUS(pc)
 
 
 
@@ -44,3 +43,12 @@ pull_pairs(source, res, noise, prop):
     noise: 'homogenized' or 'matched'
     prop: 'distance', 'mean_cloud_sep', 'beam_sep', 'MLUM_MSUN', 'SIGV_KMS', 'RAD_PC'
   OUTPUT: returns three dataframes (source_res_first, source_res_second, source_res_third) with columns: cloud_index, nn(2,3)_index, cloud_prop, nn(2,3)nn_prop
+
+rad_corr(source, res, noise, prop, rad_bins, show_plot):
+    source: 'source' *note only singular source, not list of sources here
+    res: 60 *note only singular resolution here, not list
+    noise: 'homogenized' or 'matched'
+    prop: 'distance', 'mean_cloud_sep', 'beam_sep', 'MLUM_MSUN', 'SIGV_KMS', 'RAD_PC'
+    rad_bins: list of radial bins [0,1,2,3]
+    show_plot: boolean. if True, plots radial regions correlations
+  OUTPUT: returns list of arrays, each corresponding to a radial region, and all the clouds contained within it

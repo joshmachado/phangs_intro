@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.cm as cm
 import pandas as pd
 import os.path
+import scipy.stats
+
 
 def retrieve(noise, source=[], res=[]):
 
@@ -16,7 +18,7 @@ def retrieve(noise, source=[], res=[]):
                 perc = [5,16,50,84,95]
                 for i in range(len(res)):
                     fp = '/Users/josh/projects/intro/'+str(source[z])+'/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
-                    if os.path.isfile(fp) == True:
+                    if os.path.isfile(fp):
                         tab = Table.read(fp)
                         cloudnum = np.array(tab['CLOUDNUM'])
                         distance = np.array(tab['DISTANCE_PC'])
@@ -89,7 +91,7 @@ def retrieve(noise, source=[], res=[]):
                 perc = [5,16,50,84,95]
                 for i in range(len(res)):
                     fp = '/Users/josh/projects/intro/'+str(source[z])+'/matched/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
-                    if os.path.isfile(fp) == True:
+                    if os.path.isfile(fp):
                         tab = Table.read(fp)
                         cloudnum = np.array(tab['CLOUDNUM'])
                         distance = np.array(tab['DISTANCE_PC'])
@@ -163,7 +165,7 @@ def pull_props(noise, source=[], res=[]):
             for i in range(len(source)):
                 fp = '/Users/josh/projects/intro/'+str(source[i])+'/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
                 stats = '/Users/josh/projects/intro/'+str(source[i])+'/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
-                if os.path.isfile(fp) == True:
+                if os.path.isfile(fp):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
                     df = pd.DataFrame(cat)
@@ -189,7 +191,7 @@ def pull_props(noise, source=[], res=[]):
             for i in range(len(source)):
                 fp = '/Users/josh/projects/intro/'+str(source[i])+'/matched/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
                 stats = '/Users/josh/projects/intro/'+str(source[i])+'/matched/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
-                if os.path.isfile(fp) == True:
+                if os.path.isfile(fp):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
                     df = pd.DataFrame(cat)
@@ -215,7 +217,7 @@ def pull_props(noise, source=[], res=[]):
 
 def pull_pairs(source, res, noise, prop):
     loc = '/Users/josh/projects/intro/'
-    global first_pairs, second_pairs, third_pairs
+    global first_pairs, second_pairs, third_pairs, all_pairs
     props_dict = {
     "distance": ['min_dist', 'min_dist2nd', 'min_dist3rd'],
     "mean_cloud_sep": ['mean_cloud_sep_nn', 'mean_cloud_sep_nn2', 'mean_cloud_sep_nn3'],
@@ -226,28 +228,86 @@ def pull_pairs(source, res, noise, prop):
     }
 
 
-
     if noise=='homogenized':
         fp = loc+str(source)+'/'+str(source)+'_'+str(res)+'pc_cloud_stats.csv'
         if os.path.isfile(fp):
             cat = pd.read_csv(fp)
+            tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
             cloud = cat['cloudnum']
             nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
-            nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
-            first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
-            second_pairs = pd.DataFrame({'cloud_index':cloud, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
-            third_pairs = pd.DataFrame({'cloud_index':cloud, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-            return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna()
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
+                cloud_prop = tab[prop]
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop})
+                second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'cloud_prop':cloud_prop, 'nn2_'+str(prop):nn2_prop})
+                third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'cloud_prop':cloud_prop, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
+            else:
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
+                second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
+                third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
 
 
     if noise=='matched':
         fp = loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2'
         if os.path.isfile(fp):
             cat = pd.read_csv(fp)
+            tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
             cloud = cat('cloudnum')
             nn_index, nn2_index, nn3_index = cat('nn_index'), cat('nn2_index'), cat('nn3_index')
-            nn_prop, nn2_prop, nn3_prop = cat(str(props_dict[prop][0])), cat(str(props_dict[prop][1])), cat(str(props_dict[prop][2]))
-            first_pairs = pd.DataFrame({'cloud_index':cloud, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
-            second_pairs = pd.DataFrame({'cloud_index':cloud, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
-            third_pairs = pd.DataFrame({'cloud_index':cloud, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-            return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna()
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
+                cloud_prop = tab[prop]
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop})
+                second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'cloud_prop':cloud_prop, 'nn2_'+str(prop):nn2_prop})
+                third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'cloud_prop':cloud_prop, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
+            else:
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
+                second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
+                third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
+
+
+
+def rad_corr(source, res, noise, prop, rad_bins, show_plot):
+    global radregion
+    pairs = pull_pairs(source, res, noise, prop)
+    fp = '/Users/josh/projects/intro/'+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2'
+    if os.path.isfile(fp):
+        tab = Table.read(fp)
+        ref = np.array(pairs[3]['cloud_index'])
+        pairs_in_bin = np.zeros((len(pairs[3]), pairs[3].shape[1]))
+        pair_list = pairs[3].values.tolist()
+        radregion = []
+        for i in range(len(rad_bins)):
+            for j in range(len(pairs[3])):
+                if rad_bins[i-1] < tab['RGAL_KPC'][ref[j]] < rad_bins[i]:
+                    #^ this line checks the index of each cloud to see if it lies within a radial bin.
+                    # If it DOES, then the properties of the first, second and third nearest neighbors are retrieved
+                    pairs_in_bin[j] = pair_list[j]
+            radregion.append(pairs_in_bin[~(pairs_in_bin==0).all(1)])
+        if show_plot == True:
+            fig, axes = plt.subplots(len(radregion), 1, figsize=(10,10))
+            if i!=0:
+                for j in range(len(radregion)):
+                    #PLOT CLOUD PROP v 1st NEIGHBOR PROP
+                    axes[j].scatter(radregion[j][:,4], radregion[j][:,5], alpha=0.3, label='N = '+str(int(len(radregion[j][:,4])))+', '+str('%.2f' % rad_bins[i-1])+' < RGAL < '+str('%.2f' % rad_bins[i])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[j][:,4], radregion[j][:,5], nan_policy='omit')[0]))
+
+                    axes[j].set_ylabel(prop)
+                    axes[j].legend()
+                    axes[j].legend()
+        plt.show()
+        plt.close()
+        return radregion
