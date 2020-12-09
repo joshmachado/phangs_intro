@@ -255,12 +255,12 @@ def pull_pairs(source, res, noise, prop):
 
 
     if noise=='matched':
-        fp = loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2'
+        fp = loc+str(source)+'/matched/'+str(source)+'_'+str(res)+'pc_cloud_stats.csv'
         if os.path.isfile(fp):
             cat = pd.read_csv(fp)
-            tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
-            cloud = cat('cloudnum')
-            nn_index, nn2_index, nn3_index = cat('nn_index'), cat('nn2_index'), cat('nn3_index')
+            tab = Table.read(loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
+            cloud = cat['cloudnum']
+            nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
             if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
                 cloud_prop = tab[prop]
                 nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
@@ -298,6 +298,10 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
                     # If it DOES, then the properties of the first, second and third nearest neighbors are retrieved
                     pairs_in_bin[j] = pair_list[j]
             radregion.append(pairs_in_bin[~(pairs_in_bin==0).all(1)])
+        i = 1
+        while i < len(radregion):
+            radregion[i] = radregion[i][len(radregion[i-1]):,]
+            i+=1
         radregion = radregion[1:len(radregion)]
         if show_plot == True:
             fig_size = (5,10)
@@ -328,31 +332,31 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
                     ax4[k].legend()
                     ax4[k].get_xaxis().set_visible(False)
 
-        ax1[0].set_title('Cloud vs Nearest Neighbor')
-        ax1[k].set_xlabel('Cloud '+prop)
-        ax1[k].get_xaxis().set_visible(True)
-        fig1.text(0.01,0.5, 'Nearest Neighbor '+prop, va='center', rotation='vertical')
-        fig1.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+            ax1[0].set_title('Cloud vs Nearest Neighbor')
+            ax1[k].set_xlabel('Cloud '+prop)
+            ax1[k].get_xaxis().set_visible(True)
+            fig1.text(0.01,0.5, 'Nearest Neighbor '+prop, va='center', rotation='vertical')
+            fig1.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-        ax2[0].set_title('Nearest Neighbor vs. 2nd Nearest Neighbor')
-        ax2[k].set_xlabel('Nearest Neighbor '+prop)
-        ax2[k].get_xaxis().set_visible(True)
-        fig2.text(0.01,0.5, '2nd Nearest Neighbor '+prop, va='center', rotation='vertical')
-        fig2.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+            ax2[0].set_title('Nearest Neighbor vs. 2nd Nearest Neighbor')
+            ax2[k].set_xlabel('Nearest Neighbor '+prop)
+            ax2[k].get_xaxis().set_visible(True)
+            fig2.text(0.01,0.5, '2nd Nearest Neighbor '+prop, va='center', rotation='vertical')
+            fig2.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-        ax3[0].set_title('2nd vs 3rd Nearest Neighbor')
-        ax3[k].set_xlabel('2nd Nearest Neighbor '+prop)
-        ax3[k].get_xaxis().set_visible(True)
-        fig3.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
-        fig3.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+            ax3[0].set_title('2nd vs 3rd Nearest Neighbor')
+            ax3[k].set_xlabel('2nd Nearest Neighbor '+prop)
+            ax3[k].get_xaxis().set_visible(True)
+            fig3.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+            fig3.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-        ax4[0].set_title('Cloud vs 3rd Nearest Neighbor')
-        ax4[k].set_xlabel('Cloud '+prop)
-        ax4[k].get_xaxis().set_visible(True)
-        fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
-        fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+            ax4[0].set_title('Cloud vs 3rd Nearest Neighbor')
+            ax4[k].set_xlabel('Cloud '+prop)
+            ax4[k].get_xaxis().set_visible(True)
+            fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+            fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-        plt.show()
-        plt.close()
+            plt.show()
+            plt.close()
 
         return radregion
