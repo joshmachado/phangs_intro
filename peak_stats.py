@@ -159,7 +159,7 @@ def retrieve(noise, source=[], res=[]):
 
 
 
-def pull_props(noise, source=[], res=[]):
+def pull_props(noise, source=[], res=[], prop=[]):
     if noise=='homogenized':
         for j in range(len(res)):
             for i in range(len(source)):
@@ -169,7 +169,7 @@ def pull_props(noise, source=[], res=[]):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
                     df = pd.DataFrame(cat)
-                    prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
+                    #prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
                     prop_nn = np.zeros(len(cat))
                     prop_nn2 = np.zeros(len(cat))
                     prop_nn3 = np.zeros(len(cat))
@@ -195,7 +195,7 @@ def pull_props(noise, source=[], res=[]):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
                     df = pd.DataFrame(cat)
-                    prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
+                    #prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
                     prop_nn = np.zeros(len(cat))
                     prop_nn2 = np.zeros(len(cat))
                     prop_nn3 = np.zeros(len(cat))
