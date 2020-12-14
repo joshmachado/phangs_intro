@@ -64,7 +64,7 @@ def retrieve(noise, source=[], res=[]):
 
 
                         ### Compile info into dataframe ###
-                        cat = pd.DataFrame({'cloudnum':cloudnum, 'x':x, 'corr_x':xs, 'y':y,
+                        cat = pd.DataFrame({'cloudnum':cloudnum, 'RGAL_KPC':tab['RGAL_KPC'], 'x':x, 'corr_x':xs, 'y':y,
                         'nn_index':nn,  'nn2_index':nn2, 'nn3_index':nn3,
                         'min_dist':mindist, 'min_dist2nd':mindist2, 'min_dist3rd':mindist3,
                         'mean_cloud_sep_nn':mean_cloud_sep[0], 'mean_cloud_sep_nn2':mean_cloud_sep[1], 'mean_cloud_sep_nn3':mean_cloud_sep[2],
@@ -76,8 +76,8 @@ def retrieve(noise, source=[], res=[]):
                     peak_stats = pd.DataFrame({'res_pc':res,
                     'mean_dist_nn':mean_dist[:,0], 'mean_dist_nn2':mean_dist[:,1], 'mean_dist_nn3':mean_dist[:,2],
                     '5th_nn':percentiles[:,0], '5th_nn2':percentiles[:,1], '5th_nn3':percentiles[:,2],
-                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles[:,4], '16th_nn3':percentiles[:,5],
-                    '50th_nn':percentiles[:,6], '50th_nn2':percentiles[:,7], '50th_nn3':percentiles[:,8],
+                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles['cloud_prop'], '16th_nn3':percentiles[prop+'_nn'],
+                    '50th_nn':percentiles[prop+'_nn2'], '50th_nn2':percentiles[prop+'_nn3'], '50th_nn3':percentiles[:,8],
                     '84th_nn':percentiles[:,9], '84th_nn2':percentiles[:,10], '84th_nn3':percentiles[:,11],
                     '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
                     'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
@@ -149,8 +149,8 @@ def retrieve(noise, source=[], res=[]):
                     peak_stats = pd.DataFrame({'res_pc':res,
                     'mean_dist_nn':mean_dist[:,0], 'mean_dist_nn2':mean_dist[:,1], 'mean_dist_nn3':mean_dist[:,2],
                     '5th_nn':percentiles[:,0], '5th_nn2':percentiles[:,1], '5th_nn3':percentiles[:,2],
-                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles[:,4], '16th_nn3':percentiles[:,5],
-                    '50th_nn':percentiles[:,6], '50th_nn2':percentiles[:,7], '50th_nn3':percentiles[:,8],
+                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles['cloud_prop'], '16th_nn3':percentiles[prop+'_nn'],
+                    '50th_nn':percentiles[prop+'_nn2'], '50th_nn2':percentiles[prop+'_nn3'], '50th_nn3':percentiles[:,8],
                     '84th_nn':percentiles[:,9], '84th_nn2':percentiles[:,10], '84th_nn3':percentiles[:,11],
                     '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
                     'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
@@ -225,7 +225,8 @@ def pull_pairs(source, res, noise, prop):
     "MLUM_MSUN": ['MLUM_MSUN_nn', 'MLUM_MSUN_nn2', 'MLUM_MSUN_nn3'],
     "SIGV_KMS": ['SIGV_KMS_nn', 'SIGV_KMS_nn2', 'SIGV_KMS_nn3'],
     "RAD_PC": ['RAD_PC_nn', 'RAD_PC_nn2', 'RAD_PC_nn3'],
-    "RAD_NODC": ['RAD_NODC_nn', 'RAD_NODC_nn2', 'RAD_NODC_nn']
+    "RAD_NODC": ['RAD_NODC_nn', 'RAD_NODC_nn2', 'RAD_NODC_nn'],
+    "RGAL_KPC": ['RGAL_KPC_nn', 'RGAL_KPC_nn2', 'RGAL_KPC_nn3']
     }
 
 
@@ -236,13 +237,13 @@ def pull_pairs(source, res, noise, prop):
             tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
             cloud = cat['cloudnum']
             nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
-            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC' or prop=='RAD_NODC':
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC' or prop=='RAD_NODC' or prop=='RGAL_KPC':
                 cloud_prop = tab[prop]
                 nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
                 first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop})
                 second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'cloud_prop':cloud_prop, 'nn2_'+str(prop):nn2_prop})
                 third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'cloud_prop':cloud_prop, 'nn3_'+str(prop):nn3_prop})
-                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'RGAL_KPC':cat['RGAL_KPC'], 'nn_index':nn_index, 'RGAL_KPC_nn':cat['RGAL_KPC_nn'], 'nn2_index':nn2_index, 'RGAL_KPC_nn2':cat['RGAL_KPC_nn2'], 'nn3_index':nn3_index, 'RGAL_KPC_nn3':cat['RGAL_KPC_nn3'],
                 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
                 return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
             else:
@@ -250,8 +251,8 @@ def pull_pairs(source, res, noise, prop):
                 first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
                 second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
                 third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
-                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'RGAL_KPC':cat['RGAL_KPC'], 'nn_index':nn_index, 'RGAL_KPC_nn':cat['RGAL_KPC_nn'], 'nn2_index':nn2_index, 'RGAL_KPC_nn2':cat['RGAL_KPC_nn2'], 'nn3_index':nn3_index, 'RGAL_KPC_nn3':cat['RGAL_KPC_nn3'],
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
                 return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
 
 
@@ -262,13 +263,13 @@ def pull_pairs(source, res, noise, prop):
             tab = Table.read(loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
             cloud = cat['cloudnum']
             nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
-            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC' or prop=='RAD_NODC' or prop=='RGAL_KPC':
                 cloud_prop = tab[prop]
                 nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
                 first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop})
                 second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'cloud_prop':cloud_prop, 'nn2_'+str(prop):nn2_prop})
                 third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'cloud_prop':cloud_prop, 'nn3_'+str(prop):nn3_prop})
-                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'RGAL_KPC':cat['RGAL_KPC'], 'nn_index':nn_index, 'RGAL_KPC_nn':cat['RGAL_KPC_nn'], 'nn2_index':nn2_index, 'RGAL_KPC_nn2':cat['RGAL_KPC_nn2'], 'nn3_index':nn3_index, 'RGAL_KPC_nn3':cat['RGAL_KPC_nn3'],
                 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
                 return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
             else:
@@ -276,8 +277,8 @@ def pull_pairs(source, res, noise, prop):
                 first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn_'+str(prop):nn_prop})
                 second_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn2_index':nn2_index, 'nn2_'+str(prop):nn2_prop})
                 third_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn3_index':nn3_index, 'nn3_'+str(prop):nn3_prop})
-                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
-                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'RGAL_KPC':cat['RGAL_KPC'], 'nn_index':nn_index, 'RGAL_KPC_nn':cat['RGAL_KPC_nn'], 'nn2_index':nn2_index, 'RGAL_KPC_nn2':cat['RGAL_KPC_nn2'], 'nn3_index':nn3_index, 'RGAL_KPC_nn3':cat['RGAL_KPC_nn3'],
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
                 return first_pairs.dropna(), second_pairs.dropna(), third_pairs.dropna(), all_pairs.dropna()
 
 
@@ -285,91 +286,81 @@ def pull_pairs(source, res, noise, prop):
 def rad_corr(source, res, noise, prop, rad_bins, show_plot):
     global radregion
     pairs = pull_pairs(source, res, noise, prop)
-    fp = '/Users/josh/projects/intro/'+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2'
-    if os.path.isfile(fp):
-        tab = Table.read(fp)
-        ref = np.array(pairs[3]['cloud_index'])
-        pairs_in_bin = np.zeros((len(pairs[3]), pairs[3].shape[1]))
-        pair_list = pairs[3].values.tolist()
-        radregion = []
-        for i in range(len(rad_bins)):
-            for j in range(len(pairs[3])):
-                if tab['RGAL_KPC'][ref[j]] > rad_bins[i-1] and tab['RGAL_KPC'][ref[j]] < rad_bins[i]:
-                    #^ this line checks the index of each cloud to see if it lies within a radial bin.
-                    # If it DOES, then the properties of the first, second and third nearest neighbors are retrieved
-                    pairs_in_bin[j] = pair_list[j]
-            radregion.append(pairs_in_bin[~(pairs_in_bin==0).all(1)])
-        i = 1
-        while i < len(radregion):
-            radregion[i] = radregion[i][len(radregion[i-1]):,]
-            i+=1
-        radregion = radregion[1:len(radregion)]
-        if show_plot == True:
-            fig_size = (5,10)
-            fig1, ax1 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS NN PROP
-            fig2, ax2 = plt.subplots(len(radregion), 1, figsize=fig_size) #1st NN PROP VS 2nd NN PROP
-            fig3, ax3 = plt.subplots(len(radregion), 1, figsize=fig_size) #2nd NN PROP VS 3rd NN PROP
-            fig4, ax4 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS 3rd NN PROP
-            if i!=0:
-                for k in range(len(radregion)):
+    ref = np.array(pairs[3]['cloud_index'])
+    pairs_in_bin = np.zeros((len(pairs[3]), pairs[3].shape[1]))
+    pair_list = pairs[3].values.tolist()
+    radregion = []
+    pairs = pairs[3].sort_values(by=['RGAL_KPC'])
+    for i in range(len(rad_bins)):
+        radregion.append(pairs[pairs['RGAL_KPC'].between(rad_bins[i-1],rad_bins[i], inclusive=False)])
 
-                    #PLOT CLOUD PROP v 1st NEIGHBOR PROP
-                    ax1[k].scatter(radregion[k][:,4], radregion[k][:,5], alpha=0.3, label='N = '+str(int(len(radregion[k][:,4])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,4], radregion[k][:,5], nan_policy='omit')[0]))
-                    ax1[k].legend()
-                    ax1[k].get_xaxis().set_visible(False)
+    radregion = radregion[1:len(radregion)]
+    if show_plot == True:
+        fig_size = (5,9)
+        fig1, ax1 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS NN PROP
+        fig2, ax2 = plt.subplots(len(radregion), 1, figsize=fig_size) #1st NN PROP VS 2nd NN PROP
+        fig3, ax3 = plt.subplots(len(radregion), 1, figsize=fig_size) #2nd NN PROP VS 3rd NN PROP
+        fig4, ax4 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS 3rd NN PROP
+        if i!=0:
+            for k in range(len(radregion)):
 
-                    #PLOT 1ST NN PROP v 2ND NEIGHBOR PROP
-                    ax2[k].scatter(radregion[k][:,5], radregion[k][:,6], alpha=0.3, label='N = '+str(int(len(radregion[k][:,5])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,5], radregion[k][:,6], nan_policy='omit')[0]))
-                    ax2[k].legend()
-                    ax2[k].get_xaxis().set_visible(False)
+                #PLOT CLOUD PROP v 1st NEIGHBOR PROP
+                ax1[k].scatter(radregion[k]['cloud_prop'], radregion[k]['nn_'+prop], alpha=0.3, label='N = '+str(int(len(radregion[k]['cloud_prop'])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k]['cloud_prop'], radregion[k]['nn_'+prop], nan_policy='omit')[0]))
+                ax1[k].legend()
+                ax1[k].get_xaxis().set_visible(False)
 
-                    #PLOT 2ND NN PROP v 3RD NEIGHBOR PROP
-                    ax3[k].scatter(radregion[k][:,6], radregion[k][:,7], alpha=0.3, label='N = '+str(int(len(radregion[k][:,6])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,6], radregion[k][:,7], nan_policy='omit')[0]))
-                    ax3[k].legend()
-                    ax3[k].get_xaxis().set_visible(False)
+                #PLOT 1ST NN PROP v 2ND NEIGHBOR PROP
+                ax2[k].scatter(radregion[k]['nn_'+prop], radregion[k]['nn2_'+prop], alpha=0.3, label='N = '+str(int(len(radregion[k]['nn_'+prop])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k]['nn_'+prop], radregion[k]['nn2_'+prop], nan_policy='omit')[0]))
+                ax2[k].legend()
+                ax2[k].get_xaxis().set_visible(False)
 
-                    #PLOT CLOUD PROP v 3RD NEIGHBOR PROP
-                    ax4[k].scatter(radregion[k][:,4], radregion[k][:,7], alpha=0.3, label='N = '+str(int(len(radregion[k][:,4])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k][:,4], radregion[k][:,7], nan_policy='omit')[0]))
-                    ax4[k].legend()
-                    ax4[k].get_xaxis().set_visible(False)
+                #PLOT 2ND NN PROP v 3RD NEIGHBOR PROP
+                ax3[k].scatter(radregion[k]['nn2_'+prop], radregion[k]['nn3_'+prop], alpha=0.3, label='N = '+str(int(len(radregion[k]['nn2_'+prop])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k]['nn2_'+prop], radregion[k]['nn3_'+prop], nan_policy='omit')[0]))
+                ax3[k].legend()
+                ax3[k].get_xaxis().set_visible(False)
 
-            ax1[0].set_title('Cloud vs Nearest Neighbor')
-            ax1[k].set_xlabel('Cloud '+prop)
-            ax1[k].get_xaxis().set_visible(True)
-            fig1.text(0.01,0.5, 'Nearest Neighbor '+prop, va='center', rotation='vertical')
-            fig1.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+                #PLOT CLOUD PROP v 3RD NEIGHBOR PROP
+                ax4[k].scatter(radregion[k]['cloud_prop'], radregion[k]['nn3_'+prop], alpha=0.3, label='N = '+str(int(len(radregion[k]['cloud_prop'])))+', '+str('%.2f' % rad_bins[k])+' < RGAL < '+str('%.2f' % rad_bins[k+1])+r'kpc, $\rho$ = '+str('%.2f' % scipy.stats.spearmanr(radregion[k]['cloud_prop'], radregion[k]['nn3_'+prop], nan_policy='omit')[0]))
+                ax4[k].legend()
+                ax4[k].get_xaxis().set_visible(False)
 
-            ax2[0].set_title('Nearest Neighbor vs. 2nd Nearest Neighbor')
-            ax2[k].set_xlabel('Nearest Neighbor '+prop)
-            ax2[k].get_xaxis().set_visible(True)
-            fig2.text(0.01,0.5, '2nd Nearest Neighbor '+prop, va='center', rotation='vertical')
-            fig2.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+        ax1[0].set_title('Cloud vs Nearest Neighbor')
+        ax1[k].set_xlabel('Cloud '+prop)
+        ax1[k].get_xaxis().set_visible(True)
+        fig1.text(0.01,0.5, 'Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig1.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-            ax3[0].set_title('2nd vs 3rd Nearest Neighbor')
-            ax3[k].set_xlabel('2nd Nearest Neighbor '+prop)
-            ax3[k].get_xaxis().set_visible(True)
-            fig3.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
-            fig3.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+        ax2[0].set_title('Nearest Neighbor vs. 2nd Nearest Neighbor')
+        ax2[k].set_xlabel('Nearest Neighbor '+prop)
+        ax2[k].get_xaxis().set_visible(True)
+        fig2.text(0.01,0.5, '2nd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig2.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-            ax4[0].set_title('Cloud vs 3rd Nearest Neighbor')
-            ax4[k].set_xlabel('Cloud '+prop)
-            ax4[k].get_xaxis().set_visible(True)
-            fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
-            fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
-            if prop=='MLUM_MSUN':
-                for z in range(0,4):
-                    ax1[z].set_xscale('log')
-                    ax1[z].set_yscale('log')
-                    ax2[z].set_xscale('log')
-                    ax2[z].set_yscale('log')
-                    ax3[z].set_xscale('log')
-                    ax3[z].set_yscale('log')
-                    ax4[z].set_xscale('log')
-                    ax4[z].set_yscale('log')
-            plt.show()
-            plt.close()
+        ax3[0].set_title('2nd vs 3rd Nearest Neighbor')
+        ax3[k].set_xlabel('2nd Nearest Neighbor '+prop)
+        ax3[k].get_xaxis().set_visible(True)
+        fig3.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig3.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
 
-        return radregion
+        ax4[0].set_title('Cloud vs 3rd Nearest Neighbor')
+        ax4[k].set_xlabel('Cloud '+prop)
+        ax4[k].get_xaxis().set_visible(True)
+        fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
+        fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
+        if prop=='MLUM_MSUN':
+            for z in range(0,4):
+                ax1[z].set_xscale('log')
+                ax1[z].set_yscale('log')
+                ax2[z].set_xscale('log')
+                ax2[z].set_yscale('log')
+                ax3[z].set_xscale('log')
+                ax3[z].set_yscale('log')
+                ax4[z].set_xscale('log')
+                ax4[z].set_yscale('log')
+        plt.show()
+        plt.close()
+
+    return radregion
 
 
 
