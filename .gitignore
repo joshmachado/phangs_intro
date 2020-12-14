@@ -3,4 +3,4 @@
 /ngc3621/*.fits
 *.DS_Store
 /new_props
-**.fits.bz2
+/ngc6300/**.fits.bz2
