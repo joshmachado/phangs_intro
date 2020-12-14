@@ -428,5 +428,5 @@ def measure_corr(source, res, noise, param_a, param_b, show_plot):
 
 
 
-def measure_corr_rad(source, res, noise, param_a, param_b, rad_bins, show_plot):
+#def measure_corr_rad(source, res, noise, param_a, param_b, rad_bins, show_plot):
     measure_corr(x,y,z)
