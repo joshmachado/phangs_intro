@@ -224,7 +224,8 @@ def pull_pairs(source, res, noise, prop):
     "beam_sep": ['beam_sep_nn', 'beam_sep_nn2', 'beam_sep_nn3'],
     "MLUM_MSUN": ['MLUM_MSUN_nn', 'MLUM_MSUN_nn2', 'MLUM_MSUN_nn3'],
     "SIGV_KMS": ['SIGV_KMS_nn', 'SIGV_KMS_nn2', 'SIGV_KMS_nn3'],
-    "RAD_PC": ['RAD_PC_nn', 'RAD_PC_nn2', 'RAD_PC_nn3']
+    "RAD_PC": ['RAD_PC_nn', 'RAD_PC_nn2', 'RAD_PC_nn3'],
+    "RAD_NODC": ['RAD_NODC_nn', 'RAD_NODC_nn2', 'RAD_NODC_nn']
     }
 
 
@@ -235,7 +236,7 @@ def pull_pairs(source, res, noise, prop):
             tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
             cloud = cat['cloudnum']
             nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
-            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC' or prop=='RAD_NODC':
                 cloud_prop = tab[prop]
                 nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
                 first_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop})
@@ -355,8 +356,77 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
             ax4[k].get_xaxis().set_visible(True)
             fig4.text(0.01,0.5, '3rd Nearest Neighbor '+prop, va='center', rotation='vertical')
             fig4.suptitle(prop+' in '+str(source).upper()+' '+str(res)+'pc Resolution', fontsize=16)
-
+            if prop=='MLUM_MSUN':
+                for z in range(0,4):
+                    ax1[z].set_xscale('log')
+                    ax1[z].set_yscale('log')
+                    ax2[z].set_xscale('log')
+                    ax2[z].set_yscale('log')
+                    ax3[z].set_xscale('log')
+                    ax3[z].set_yscale('log')
+                    ax4[z].set_xscale('log')
+                    ax4[z].set_yscale('log')
             plt.show()
             plt.close()
 
         return radregion
+
+
+
+def measure_corr(source, res, noise, param_a, param_b, show_plot):
+    loc = '/Users/josh/projects/intro/'
+    global all_pairs
+    param_dict = {
+    "distance": ['min_dist', 'min_dist2nd', 'min_dist3rd'],
+    "mean_cloud_sep": ['mean_cloud_sep_nn', 'mean_cloud_sep_nn2', 'mean_cloud_sep_nn3'],
+    "beam_sep": ['beam_sep_nn', 'beam_sep_nn2', 'beam_sep_nn3'],
+    "MLUM_MSUN": ['MLUM_MSUN_nn', 'MLUM_MSUN_nn2', 'MLUM_MSUN_nn3'],
+    "SIGV_KMS": ['SIGV_KMS_nn', 'SIGV_KMS_nn2', 'SIGV_KMS_nn3'],
+    "RAD_PC": ['RAD_PC_nn', 'RAD_PC_nn2', 'RAD_PC_nn3']
+    }
+    if noise=='homogenized':
+        fp = loc+str(source)+'/'+str(source)+'_'+str(res)+'pc_cloud_stats.csv'
+        if os.path.isfile(fp):
+            cat = pd.read_csv(fp)
+            tab = Table.read(loc+str(source)+'/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
+            cloud = cat['cloudnum']
+            nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
+            #grab param_a pair_list
+            if param_a == 'MLUM_MSUN' or param_a =='SIGV_KMS' or param_a =='RAD_PC':
+                cloud_prop = tab[prop]
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return all_pairs.dropna()
+            else:
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return all_pairs.dropna()
+
+
+
+
+    if noise=='matched':
+        fp = loc+str(source)+'/matched/'+str(source)+'_'+str(res)+'pc_cloud_stats.csv'
+        if os.path.isfile(fp):
+            cat = pd.read_csv(fp)
+            tab = Table.read(loc+str(source)+'/matched/'+str(source)+'_12m+7m+tp_co21_'+str(res)+'pc_props.fits.bz2')
+            cloud = cat['cloudnum']
+            nn_index, nn2_index, nn3_index = cat['nn_index'], cat['nn2_index'], cat['nn3_index']
+            if prop == 'MLUM_MSUN' or prop=='SIGV_KMS' or prop=='RAD_PC':
+                cloud_prop = tab[prop]
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'cloud_prop':cloud_prop, 'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return all_pairs.dropna()
+            else:
+                nn_prop, nn2_prop, nn3_prop = cat[str(props_dict[prop][0])], cat[str(props_dict[prop][1])], cat[str(props_dict[prop][2])]
+                all_pairs = pd.DataFrame({'cloud_index':cloud-1, 'nn_index':nn_index, 'nn2_index':nn2_index, 'nn3_index':nn3_index,
+                'nn_'+str(prop):nn_prop, 'nn2_'+str(prop):nn2_prop, 'nn3_'+str(prop):nn3_prop})
+                return all_pairs.dropna()
+
+
+
+def measure_corr_rad(source, res, noise, param_a, param_b, rad_bins, show_plot):
+    measure_corr(x,y,z)
