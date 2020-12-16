@@ -7,7 +7,7 @@ from matplotlib.patches import Rectangle
 
 sources = ['ngc1433', 'ngc3621', 'ngc6300', 'ngc2835']
 res = [60, 90, 120, 150]
-prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
+prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
 
 
 
@@ -25,6 +25,11 @@ for i in range(len(res)):
                 axes[k,0].scatter(first, second, label=str(scipy.stats.spearmanr(first, second, nan_policy='omit')[0]))
                 axes[k,1].scatter(second, third, label=str(scipy.stats.spearmanr(second, third, nan_policy='omit')[0]))
                 axes[k,0].set_ylabel(prop[k])
+                if prop[k] == 'MLUM_MSUN':
+                    axes[k,0].set_xscale('log')
+                    axes[k,0].set_yscale('log')
+                    axes[k,1].set_xscale('log')
+                    axes[k,1].set_yscale('log')
                 axes[k,0].legend()
                 axes[k,1].legend()
             axes[0,0].set_title('First to Second')
