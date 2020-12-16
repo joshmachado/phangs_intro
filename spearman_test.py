@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 sources = ['ngc1433', 'ngc3621', 'ngc6300', 'ngc2835']
 res = [60, 90, 120, 150]
-prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_PC']
+prop = ['MLUM_MSUN', 'SIGV_KMS', 'RAD_NODC']
 stats = np.zeros([len(prop), 6])
 for i in range(len(res)):
     df = pd.DataFrame(columns = ('source', 'first_second', 'pval_first_second', 'first_third', 'pval_first_third',
@@ -25,6 +25,9 @@ for i in range(len(res)):
                 plt.scatter(first, second)
                 plt.xlabel(prop[k])
                 plt.ylabel(prop[k])
+                if prop[k] == 'MLUM_MSUN':
+                    plt.xscale('log')
+                    plt.yscale('log')
                 plt.title(sources[j]+' '+str(res[i])+'pc resolution - ' + prop[k])
                 plt.savefig('/Users/josh/projects/intro/stats/corr_plots/first_second/'+prop[k]+'_'+str(res[i])+'pc_'+sources[j]+'.pdf')
                 plt.close()
