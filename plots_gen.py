@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 import pandas as pd
 
 
-source = 'ngc2835'
+source = 'ngc6300'
 loc = '/Users/josh/projects/intro/'
 res = np.array([60,90,120,150])
 for i in range(len(res)):
