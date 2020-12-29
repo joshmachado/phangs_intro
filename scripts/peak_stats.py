@@ -9,7 +9,7 @@ import scipy.stats
 
 def retrieve(noise, source=[], res=[]):
 
-        loc = '/Users/josh/projects/intro'
+        loc = '/Users/josh/projects/intro/sources'
         if noise=='homogenized':
             for z in range(len(source)):
                 mean_dist = np.zeros([4,3])
@@ -17,8 +17,9 @@ def retrieve(noise, source=[], res=[]):
                 percentiles = np.zeros([4,15]) #5th, 16th, 50th, 84th, 95th
                 perc = [5,16,50,84,95]
                 for i in range(len(res)):
-                    fp = '/Users/josh/projects/intro/'+str(source[z])+'/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
+                    fp = '/Users/josh/projects/intro/sources/'+str(source[z])+'/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
                     if os.path.isfile(fp):
+                        print('beginning '+str(source[z])+' '+str(res[i]))
                         tab = Table.read(fp)
                         cloudnum = np.array(tab['CLOUDNUM'])
                         distance = np.array(tab['DISTANCE_PC'])
@@ -39,6 +40,7 @@ def retrieve(noise, source=[], res=[]):
                                 dist[k,j] = np.sqrt(np.square(xs[k] - xs[j]) + np.square(y[k] - y[j]))
                             k+=1
                         dist[dist == 0] = np.nan
+                        k=0
                         for k in range(len(x)):
                             ind = np.where(dist[k] == np.nanmin(dist[k])) #index of nearest neighbor
                             ind2 = np.where(dist[k] == np.partition(dist[k], 1)[1]) #index of 2nd nearest neighbor
@@ -76,13 +78,14 @@ def retrieve(noise, source=[], res=[]):
                     peak_stats = pd.DataFrame({'res_pc':res,
                     'mean_dist_nn':mean_dist[:,0], 'mean_dist_nn2':mean_dist[:,1], 'mean_dist_nn3':mean_dist[:,2],
                     '5th_nn':percentiles[:,0], '5th_nn2':percentiles[:,1], '5th_nn3':percentiles[:,2],
-                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles['cloud_prop'], '16th_nn3':percentiles[prop+'_nn'],
-                    '50th_nn':percentiles[prop+'_nn2'], '50th_nn2':percentiles[prop+'_nn3'], '50th_nn3':percentiles[:,8],
+                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles[:,4], '16th_nn3':percentiles[:,5],
+                    '50th_nn':percentiles[:,6], '50th_nn2':percentiles[:,7], '50th_nn3':percentiles[:,8],
                     '84th_nn':percentiles[:,9], '84th_nn2':percentiles[:,10], '84th_nn3':percentiles[:,11],
                     '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
                     'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
 
                     peak_stats.to_csv(loc+'/'+source[z]+'/'+source[z]+'_stats.csv', index=False)
+                    print(str(source[z])+' done')
         if noise=='matched':
             for z in range(len(source)):
                 mean_dist = np.zeros([4,3])
@@ -90,7 +93,7 @@ def retrieve(noise, source=[], res=[]):
                 percentiles = np.zeros([4,15]) #5th, 16th, 50th, 84th, 95th
                 perc = [5,16,50,84,95]
                 for i in range(len(res)):
-                    fp = '/Users/josh/projects/intro/'+str(source[z])+'/matched/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
+                    fp = '/Users/josh/projects/intro/sources/'+str(source[z])+'/matched/'+str(source[z])+'_12m+7m+tp_co21_'+str(res[i])+'pc_props.fits.bz2'
                     if os.path.isfile(fp):
                         tab = Table.read(fp)
                         cloudnum = np.array(tab['CLOUDNUM'])
@@ -149,8 +152,8 @@ def retrieve(noise, source=[], res=[]):
                     peak_stats = pd.DataFrame({'res_pc':res,
                     'mean_dist_nn':mean_dist[:,0], 'mean_dist_nn2':mean_dist[:,1], 'mean_dist_nn3':mean_dist[:,2],
                     '5th_nn':percentiles[:,0], '5th_nn2':percentiles[:,1], '5th_nn3':percentiles[:,2],
-                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles['cloud_prop'], '16th_nn3':percentiles[prop+'_nn'],
-                    '50th_nn':percentiles[prop+'_nn2'], '50th_nn2':percentiles[prop+'_nn3'], '50th_nn3':percentiles[:,8],
+                    '16th_nn':percentiles[:,3], '16th_nn2':percentiles[:,4], '16th_nn3':percentiles[:,5],
+                    '50th_nn':percentiles[:,6], '50th_nn2':percentiles[:,7], '50th_nn3':percentiles[:,8],
                     '84th_nn':percentiles[:,9], '84th_nn2':percentiles[:,10], '84th_nn3':percentiles[:,11],
                     '95th_nn':percentiles[:,12], '95th_nn2':percentiles[:,13], '95th_nn3':percentiles[:,14],
                     'mean_beam_sep':mean_beam_sep[:,0],'mean_beam_sep2':mean_beam_sep[:,1], 'mean_beam_sep3':mean_beam_sep[:,2]})
@@ -163,9 +166,9 @@ def pull_props(noise, source=[], res=[], prop=[]):
     if noise=='homogenized':
         for j in range(len(res)):
             for i in range(len(source)):
-                fp = '/Users/josh/projects/intro/'+str(source[i])+'/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
-                stats = '/Users/josh/projects/intro/'+str(source[i])+'/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
-                if os.path.isfile(fp):
+                fp = '/Users/josh/projects/intro/sources/'+str(source[i])+'/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
+                stats = '/Users/josh/projects/intro/sources/'+str(source[i])+'/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
+                if os.path.isfile(stats):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
                     df = pd.DataFrame(cat)
@@ -185,12 +188,12 @@ def pull_props(noise, source=[], res=[], prop=[]):
                         df[str(prop[z])+'_nn'] = prop_nn
                         df[str(prop[z])+'_nn2'] = prop_nn2
                         df[str(prop[z])+'_nn3'] = prop_nn3
-                        df.to_csv('/Users/josh/projects/intro/'+str(source[i])+'/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
+                        df.to_csv('/Users/josh/projects/intro/sources/'+str(source[i])+'/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
     if noise=='matched':
         for j in range(len(res)):
             for i in range(len(source)):
-                fp = '/Users/josh/projects/intro/'+str(source[i])+'/matched/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
-                stats = '/Users/josh/projects/intro/'+str(source[i])+'/matched/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
+                fp = '/Users/josh/projects/intro/sources/'+str(source[i])+'/matched/'+str(source[i])+'_12m+7m+tp_co21_'+str(res[j])+'pc_props.fits.bz2'
+                stats = '/Users/josh/projects/intro/sources/'+str(source[i])+'/matched/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv'
                 if os.path.isfile(fp):
                     tab = Table.read(fp)
                     cat = pd.read_csv(stats)
@@ -211,12 +214,12 @@ def pull_props(noise, source=[], res=[], prop=[]):
                         df[str(prop[z])+'_nn'] = prop_nn
                         df[str(prop[z])+'_nn2'] = prop_nn2
                         df[str(prop[z])+'_nn3'] = prop_nn3
-                        df.to_csv('/Users/josh/projects/intro/'+str(source[i])+'/matched/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
+                        df.to_csv('/Users/josh/projects/intro/sources/'+str(source[i])+'/matched/'+str(source[i])+'_'+str(res[j])+'pc_cloud_stats.csv', index=False)
 
 
 
 def pull_pairs(source, res, noise, prop):
-    loc = '/Users/josh/projects/intro/'
+    loc = '/Users/josh/projects/intro/sources/'
     global first_pairs, second_pairs, third_pairs, all_pairs
     props_dict = {
     "distance": ['min_dist', 'min_dist2nd', 'min_dist3rd'],
@@ -297,7 +300,7 @@ def rad_corr(source, res, noise, prop, rad_bins, show_plot):
     radregion = radregion[1:len(radregion)]
     if show_plot == True:
         fig_size = (5,9)
-        fig1, ax1 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS NN PROP
+        fig1, ax1 = plt.subplots(len(radregion), 1, figsize=fig_size, dpi=175) #CLOUD PROP VS NN PROP
         fig2, ax2 = plt.subplots(len(radregion), 1, figsize=fig_size) #1st NN PROP VS 2nd NN PROP
         fig3, ax3 = plt.subplots(len(radregion), 1, figsize=fig_size) #2nd NN PROP VS 3rd NN PROP
         fig4, ax4 = plt.subplots(len(radregion), 1, figsize=fig_size) #CLOUD PROP VS 3rd NN PROP

@@ -16,7 +16,7 @@ for i in range(len(res)):
         fp = '/Users/josh/projects/intro/'+str(sources[j])+'/'+str(sources[j])+'_'+str(res[i])+'pc_cloud_stats.csv'
         if os.path.isfile(fp) == True:
             cat = pd.read_csv(fp)
-            fig, axes = plt.subplots(3, 2, figsize=(10,10))
+            fig, axes = plt.subplots(3, 2, figsize=(10,10), dpi=150)
             for k in range(len(prop)):
                 first = np.array(cat[str(prop[k])+'_nn'])
                 second = np.array(cat[str(prop[k])+'_nn2'])
@@ -36,3 +36,4 @@ for i in range(len(res)):
             axes[0,1].set_title('Second to Third')
             fig.suptitle(sources[j]+' at '+str(res[i])+'pc resolution', fontsize=16)
             plt.savefig('/Users/josh/projects/intro/stats/'+sources[j]+'_'+str(res[i])+'_propcorr.pdf')
+            plt.close()
