@@ -4,3 +4,4 @@
 *.DS_Store
 /new_props
 /ngc6300/*.fits.bz2
+*.fits
